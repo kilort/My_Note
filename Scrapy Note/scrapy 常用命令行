@@ -1,9 +1,0 @@
-
-
-1.创建项目：scrapy startproject pj_name
-2.创建spider : cd pj_name --->  scrapy genspider sp_name sp.com
-3.显示可用命令行：scrapy -h
-4.shell模式：scrapy shell
-5.运行爬虫：scrapy crawl sp_name
-6.显示所有spider： scrapy list
-7.自定义项目命令：于setup.py的entry point中添加scrapy.commands来添加命令
