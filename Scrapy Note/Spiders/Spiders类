@@ -1,0 +1,38 @@
+
+
+1. Spiders类的作用：定义爬取动作以及分析网页内容
+
+2. 常见工作过程：URL --> Request --> Response --> callback --> 简析网页，提取内容（item） (默认url于start_urls当中，callback=self.parse)
+
+3. scrapy.Spider类常用的方法：name ： 定义这个spider的名字，常用在爬虫启动时，并且这是惟一的。
+                            allowed_domains : 这是一个可选值，包含spider允许爬取的域名列表，域名不在列表中的url不会被跟进。
+                            start_urls : URL列表，spider会从该列表中进行爬取。
+                            custom_settings : 字典形式，在启动sipder时，这个设置会覆盖项目级的设置，该属性需要被定义为class（未接触过）
+                            crawler ： 具体见Crawler API。
+                            start_requests() : 返回一个可迭代对象，包含request ，类似于start_urls,生成url，使用start_request的方法，则start_url失效。
+                            make_requests_from_url(url) : 接收一个url并返回Request对象，意如其名。
+                            parse（response）： 若response无callback，则此方式是scrapy处理下载的response的默认方法。
+
+4.class scrapy.spiders.CrawlSpider : 定义一些规则来提供跟进link的方便机制。（不得使用parse作为回调函数，否则crawl报错，适合于全站抓取）
+                            新增的属性：rules : 包含一个或者多个规则的list。
+                                            （1）link_extractor : 定义如何从爬取到的页面提取链接
+                                            （2）callback ： 在link_extractor中使用回调函数
+                                            （3）follow ： 布尔值，确定是否需要跟进，若存在callback，则为True，否则为False
+                                            （4） process_links,process_request : 前者过滤链接，后者过滤request
+                                       parse_start_url : 当start_url放回url时，该方法返回一个Item或者request，或者俩者
+5.class scrapy.spiders.XMLFeedSpider ：  用来通过迭代各个节点来分析XML源（rss聚合文件，简单的说就是类似于那些可以给你推送个性化内容的订阅号）、
+                            iterator： 用于确定你使用哪个迭代器（iternodes：基于re的迭代器，html，xml，迭代时会出现内存问题，默认用iternodes）
+                            itertag ： 开始迭代的节点名（itertag =‘节点名’）
+                            parse_node ： 当节点符合标签名时，该方法被调用，接受response以及selector作为参数传递给该方法，返回item
+
+6.class scrapy.spiders.CSVFeedSpider ： 用于遍历处理csv文件（按行遍历）
+                            delimiter ： CSV中用于区分字段的分割符，默认为逗号
+                            quotechar ： CSV文件中字段的外壳字符，默认为“”
+                            headers : CSV文件中包含的用来提取字段行的列表
+                            parse_row : 接收一个response对象和一个headers为建的字典，代表那些行返回Item或者request或者俩者
+
+7.class scrapy.spiders.SitemapSpider ：使爬取网站时可以通过Sitemaps来发现爬取的url（sitemap：是一种包含页面的链接的一个文件，多用于搜索引擎）
+                            sitemap_urls : 包含要爬取的url的sitemap url 列表 也可以是一个robots.txt文件
+                            sitemap_rules : 一个元组列表中（a,b）a 用于匹配从sitemap提供的url的正则表达式;b，callback
+                            sitemap_alternate_links ： 当一个url有可选的链接时，是否跟进。有些非英文网站会在一个 url 块内提供其他语言的网站链接。
+
