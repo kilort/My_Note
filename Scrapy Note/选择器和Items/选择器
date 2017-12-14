@@ -1,0 +1,8 @@
+
+
+选择器：scrapy的选择器是构建于lxml库之上的,轻便的网页简析器
+构造方法 ： response和text构造（response很常用）
+实现方式 ： response.xpath（）.extract（）（将选择器选择的内容简析为文本数据）
+结合re ： response.xpath（）.re（）
+定位xpath  : xpath(//a[contains(@class ,"item")]/text()) (精准定位选择内容)
+
