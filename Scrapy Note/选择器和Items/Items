@@ -1,0 +1,4 @@
+
+
+Items是一种字典类型的容器，保存爬取到的数据
+简单的例子：name = scrapy.Field（）
