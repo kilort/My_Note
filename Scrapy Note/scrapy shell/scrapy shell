@@ -1,0 +1,12 @@
+
+
+
+scrapy shell : 可以看作是scrapy的一个测试工具，一般用于网页抓取时做测试
+
+步骤 ： scrapy shell url  ： 总端打开scrapy shell加上测试的url，会返回一个response
+       response.xpath（） ： 测试抓取是否成功
+       fetch（‘url’）     ： 在scrapy shell内，根据url返回新的response
+
+
+
+当然也可以调用scrapy shell中的值到spider中进行项目应用，但不常用，具体看文档scrapy shell
