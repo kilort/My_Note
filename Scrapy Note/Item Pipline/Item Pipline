@@ -1,0 +1,10 @@
+
+
+item pipline : 清理数据,验证爬取的数据,查重,保存数据
+
+几个方法 ：
+ open_spider(self,spider):(当spider开启时,这个方法被调用)
+ close_spider(self,spider):(当spider关闭时,这个方法被调用)
+
+
+#在启用pipline时需要到settings中去开启
