@@ -1,0 +1,117 @@
+
+
+scrapy的settings是提供了定制scrapy组件的方法,可以通过他来控制包括核心,插件,pipline以及spider组件
+
+
+获取设定值 ：
+            1  命令行选项（最高的优先级),例如,命令行指定文件的格式（csv）
+            2  每个spider的设定,custom_settings
+            3  项目设定模块（每个项目中的settings）
+            4  命令默认设定（储存于default_settings中）
+            5  默认全局设定（储存于scrapy.settings.default_settings模块中）
+
+
+
+内置设定参考方法及作用（settings中可以存在的设定）
+
+id        名称                       默认                                                     作用
+
+1  AWS_ACCESS_KEY_ID                None              连接 Amazon Web services 的AWS access key。 S3 feed storage backend 中使用.
+2  AWS_SECRET_ACCESS_KEY            None              连接 Amazon Web services 的AWS secret key。 S3 feed storage backend 中使用。
+3  BOT_NAME                         “scrapybot”       Scrapy项目实现的bot的名字(也就是项目名称)。 这将用来构造默认 User-Agent，同时也用来log。
+4  CONCURRENT_ITEMS                 100               Item Pipeline同时处理(每个response的)item的最大值。
+5  CONCURRENT_REQUESTS              16                scrapy downloader并发请求的最大值。
+6  CONCURRENT_REQUESTS_PER_DOMAIN   8                 对单个网站进行并发请求的最大值。
+7  CONCURRENT_REQUESTS_PER_IP       0                 对单个IP进行并发请求的最大值。如果非0，则忽略CONCURRENT_REQUESTS_PER_DOMAIN 设定，
+                                                      使用该设定。也就是说，并发限制将针对IP，而不是网站。该设定也影响 DOWNLOAD_DELAY:
+                                                      如果CONCURRENT_REQUESTS_PER_IP 非0，下载延迟应用在IP而不是网站上。
+8  DEFAULT_ITEM_CLASS             ‘scrapy.item.item’  在scrapy shell中实例化item使用的默认类。
+9  DEFAULT_REQUEST_HEADERS          见settings         scrapy httprequest使用的默认header，由defaultheadermiddleware产生。
+10 DEPTH_LIMIT                      0                 爬取网站最大允许的深度值，为0则无限制。
+11 DEPTH_PRIORITY                   0                 整数值，用于根据深度调整request优先级,如果为0则不跟据深度进行优先级调整。
+12 DEPTH_STATS                      True              是否收集最大数据深度
+13 DEPTH_STATS_VERBOSE              False             是否收集详细的深度数据。如果启用，每个深度的请求数将会被收集在数据中。
+14 DNSCACHE_ENABLED                 True              是否启用DNS内存缓存(DNS in-memory cache)。
+15 DNSCACHE_SIZE                    10000             DNS缓存大小
+16 DNS_TIMEOUT                      60                以秒为依据的DNS超时判断，支持浮动。
+17 DOWNLOADER    'scrapy.core.downloader.Downloader‘  用于crawl的downloader
+18 DOWNLOADER_MIDDLEWARES           {}                保存项目中启用的下载中间件及其顺序的字典。
+19 DOWNLOADER_MIDDLEWARES_BASE      很多，无需修改      包含scrapy默认启用的下载中间件的字典
+20 DOWNLOADER_STATS                 True              是否收集下载器数据
+21 DOWNLOAD_DELAY                   0                 下载器在下载同一个网站下一个页面前需要等待的时间。该选项可以用来限制爬取速度，减轻服务器压力。支持小数
+                                                      当CONCURRENT_REQUESTS_PER_IP 非0则延迟针对的是ip而非网站
+22 DOWNLOAD_HANDLERS                {}                保存项目中启用的下载处理器(request downloader handler)的字典。 例子请查看 DOWNLOAD_HANDLERS_BASE。
+23 DOWNLOAD_HANDLERS_BASE           很多{}不做修改      保存项目中默认启用的下载处理器(request downloader handler)的字典。 永远不要在项目中修改该设定，而是修改 DOWNLOADER_HANDLERS。
+                                                      例子 ：关闭下载处理器 于DOWNLOAD_HANDLERS中DOWNLOAD_HANDLERS = {'file':None,}
+24 DOWNLOAD_TIMEOUT                 180               下载器超时时间(单位: 秒)。
+25 DOWNLOAD_MAXSIZE                 1024mb            下载器下载最大值，设为0则禁用
+26 DOWNLOAD_WARNSIZE                32mb              response的最大值，若超过则会警告，设为0则警用
+27 DUPEFILTER_CLASS 'scrapy.dupefilters.RFPDupeFilter'用于检测过滤重复请求的类。
+28 DUPEFILTER_DEBUG                 False             默认情况下，只会记录第一次重复请求。设为True则会使记录所有重复的requests
+29 EDITOR                 depends on the environment  执行edit命令编辑spider时使用的编辑器。
+30 EXTENSIONS                       {}                保存项目中启用的插件及其顺序的字典。
+31 Exentsions_base                  很多              是一个可用的插件列表，部分插件需要通过设定来启用。
+32 ITEM_PIPELINES                   {}                启用pipeline及其顺序的字典，vaules设定在0-1000内
+33 ITEM_PIPELINES_BASE              {}                不可修改只可修改ITEM_PIPELINES
+34 LOG_ENABLED                      True              是否启用日志
+35 LOG_ENCODING                     ’utf-8‘           logging的编码方式
+36 LOG_FILE                         None              logging输出的文件名。如果为None，则使用标准错误输出(standard error)。
+37 LOG_FORMAT                                         格式化字符串日志形式交往。
+38 LOG_DATEFORMAT             '%Y-%m-%d %H:%M:%S'     logging的时间格式
+39 LOG_LEVEL                         'DEBUG'          log的最低级别。可选的级别有: CRITICAL、 ERROR、WARNING、INFO、DEBUG。见logging
+40 LOG_STDOUT                      False              如果为True，进程所有的标准输出(及错误)将会被重定向到log中。例如，执行print’hello'，其将会在Scrapy log中显示。
+41 MEMDEBUG_ENABLED                False              是否启用内存调试(memory debugging)
+42 MEMDEBUG_NOTIFY                   []               如果该设置不为空，当启用内存调试时将会发送一份内存报告到指定的地址；否则该报告将写到log中。
+                                                      例如 :MEMDEBUG_NOTIFY = ['user@example.com]
+43 MEMUSAGE_ENABLED                False              是否启用内存使用插件。当Scrapy进程占用的内存超出限制时，该插件将会关闭Scrapy进程， 同时发送email进行通知。
+44 MEMUSAGE_LIMIT_MB               0                  在关闭Scrapy之前所允许的最大内存数(单位: MB)(如果 MEMUSAGE_ENABLED为True)。 如果为0，将不做限制。
+45 MEMUSAGE_NOTIFY_MAIL            False              达到内存限制时通知的email列表。例如：MEMUSAGE_NOTIFY_MAIL = ['user@example.com']
+46 MEMUSAGE_REPORT（scrapy1.4中不存在）False            每个spider被关闭时是否发送内存使用报告。
+47 MEMUSAGE_WARNING_MB             0                  在发送警告email前所允许的最大内存数(单位: MB)(如果 MEMUSAGE_ENABLED为True)。 如果为0，将不发送警告。
+48 NEWSPIDER_MODULE               ‘’                  使用 genspider 命令创建新spider的模块。例子：NEWSPIDER_MODULE = 'mybot.spiders_dev'
+49 RANDOMIZE_DOWNLOAD_DELAY        True               如果启用，当从相同的网站获取数据时，Scrapy将会等待一个随机的值 (0.5到1.5之间的一个随机值 * DOWNLOAD_DELAY)。
+                                                      该随机值降低了crawler被检测到(接着被block)的机会。某些网站会分析请求， 查找请求之间时间的相似性。
+                                                      随机的策略与 wget --random-wait 选项的策略相同。若 DOWNLOAD_DELAY 为0(默认值)，该选项将不起作用。
+50 REACTOR_THREADPOOL_MAXSIZE      10                 IO阻塞时增加此值
+51 REDIRECT_MAX_TIMES              20                 定义request允许重定向的最大次数。超过该限制后该request直接返回获取到的结果。
+52 REDIRECT_MAX_METAREFRESH_DELAY  100                有些网站使用 meta-refresh 重定向到session超时页面， 因此我们限制自动重定向到最大延迟(秒)。
+53 REDIRECT_PRIORITY_ADJUST        +2                 修改重定向请求相对于原始请求的优先级。 负数意味着更多优先级。
+54 ROBOTSTXT_OBEY                  False              如果启用，Scrapy将会尊重 robots.txt策略。
+55 SCHEDULER       'scrapy.core.scheduler.Scheduler'  用于爬取的调度器。
+56 SPIDER_CONTRACTS                {}                 保存项目中启用用于测试spider的scrapy contract及其顺序的字典。
+57 SPIDER_CONTRACTS_BASE           不能做修改          保存项目中默认启用的scrapy contract的字典。 永远不要在项目中修改该设定，而是修改 SPIDER_CONTRACTS 。更多内容请参考Spiders Contracts
+58 SPIDER_LOADER_CLASS 'scrapy.spiderloader.SpiderLoader' 类似用于加载的spider，其需要spiderloader的API
+59 SPIDER_MIDDLEWARES              {}                 保存项目中启用的下载中间件及其顺序的字典。
+60 SPIDER_MIDDLEWARES_BASE         不做修改            保存项目中默认启用的spider中间件的字典。 永远不要在项目中修改该设定，而是修改 SPIDER_MIDDLEWARES。
+61 SPIDER_MODULES                  []                 scrapy搜索spider的模块列表。例子：SPIDER_MODULES = ['mybot.spiders_prod', 'mybot.spiders_dev']
+62 STATS_CLASS                                        收集数据的类。
+63 STATS_DUMP                      True               当spider结束时dump Scrapy状态数据 (到Scrapy log中)。
+64 STATSMAILER_RCPTS               []                 spider完成爬取后发送Scrapy数据。更多内容请查看 StatsMailer 。
+65 TELNETCONSOLE_ENABLED           True               表明 telnet 终端 (及其插件)是否启用的布尔值。
+66 TELNETCONSOLE_PORT            [6023, 6073]         telnet终端使用的端口范围。如果设置为 None 或 0 ， 则使用动态分配的端口。
+67 TEMPLATES_DIR         scrapy模块内部的 templates    使用 startproject 命令创建项目时查找模板的目录。
+68 URLLENGTH_LIMIT                2083                爬取URL的最大长度。更多关于该设定的默认值信息请查看: http://www.boutell.com/newfaq/misc/urllength.html
+69 USER_AGENT  "Scrapy/VERSION (+http://scrapy.org)"  爬取的默认User-Agent，除非被覆盖
+
+scrapy 1.4.0新增
+
+70 DOWNLOADER_HTTPCLIENTFACTORY                       定义一个 Twisted的protocol.ClientFactory类用于HTTP/1.0 连接
+71 DOWNLOADER_CLIENT_TLS_METHOD      ‘TLS’            使用这个设置自定义默认的HTTP / 1.1下载使用TLS / SSL的方法。其他可用（TLS1.0,TLS1.1,TLS1.2,SSLv3）
+72 DOWNLOAD_FAIL_ON_DATALOSS         True             无论是否破坏response宣布内容长度不匹配的内容由服务器或分块响应发送未正确完成，如果是真的，response提高responsefailed（[ _dataloss ]）误差。
+                                                      如果是错的,这些response是通过标记时丢失的数据添加到response,即：“数据损失”response.flags是真实的
+73 FEED_TEMPDIR                                       允许设置一个自定义文件夹来保存爬虫临时文件，然后上传FTP Feed存储和Amazon S3。
+74 FTP_PASSIVE_MODE                  True             启动FTP传输时是否使用被动模式.
+75 FTP_PASSWORD                      "guest"          当没有“ftp_password”请求时，这密码用于连接FTP
+76 FTP_USER                         "anonymous"       当没有元语言request中不存在"ftp_user"时,这个username用来FTP连接
+77 LOG_SHORT_NAMES                  False             如果为true，日志只包含根路径。如果将其设置为false，则它将显示负责日志输出的组件。
+78 MEMUSAGE_CHECK_INTERVAL_SECONDS   60.0             内存扩展检查当前内存使用情况，与memusage_limit_mb和memusage_warning_mb设定的限制，在固定的时间间隔。
+79 RETRY_PRIORITY_ADJUST             -1               调整相对于原始请求的重试请求优先级：正优先级调整意味着更高优先级。负优先级调整（缺省）表示较低优先级。
+80 SCHEDULER_DEBUG                  Flase             设置为true将记录关于请求调度器的调试信息。如果请求不能序列化到磁盘，则当前只记录一次（仅此一次）。统计计数器（调度/ unserializable）轨道的次数，这一切发生的时候。
+81 SCHEDULER_DISK_QUEUE 'scrapy.squeues.PickleLifoDiskQueue'  调度程序将使用的磁盘队列类型。其他可用的类型scrapy.squeues.picklefifodiskqueue，scrapy.squeues.marshalfifodiskqueue，scrapy.squeues.marshallifodiskqueue。
+82 SCHEDULER_MEMORY_QUEUE : 'scrapy.squeues.LifoMemoryQueue'  调度程序使用的内存队列类型。其他可用的类型是：scrapy.squeues.fifomemoryqueue。
+83 SCHEDULER_PRIORITY_QUEUE   'queuelib.PriorityQueue' 调度程序使用的优先级队列类型。
+84 SPIDER_LOADER_WARN_ONLY          False             默认情况下,当scrapy视图从spider_modules导入spider类的时候,如果有任何输入错误异常，他将失败。但是你可以选择沉默这种异常通过设置SPIDER_LOADER_WARN_ONLY=True把它变成一个简单的警告
+
+
+
+
