@@ -1,0 +1,12 @@
+
+
+调试内存溢出
+scrapy提供了追踪对象的引用机制，叫做trackref，也可以使用调试内存的库叫做guppy，这些都是在总端中操作的
+内存泄漏的原因 ： 通常是在requests传递对象的引用时（meta，request），使得该对象的生命周期与request的生命周期所绑定。而request的生命周期是最长的，所以一但绑定
+                则就会极大的损耗内存。
+                中间件中，在spider_opened中分配却没有在spider_closed中释放
+
+
+trackref的使用办法：
+       进入总端 --> prefs（）(查看活跃的引用) --> a = get.oldest(引用类型)来查看最长活跃的 --> a.url（查看其url）
+       遍历所有（iter_all）
